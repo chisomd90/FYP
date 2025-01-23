@@ -7,6 +7,9 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SignupView(generics.CreateAPIView):
@@ -59,7 +62,12 @@ def role_based_dashboard(request):
         CustomUser.Role.LAWYER: "Welcome to the Lawyer Dashboard!"
     }
     message = role_messages.get(user.role, "No specific dashboard for your role.")
+
+    # Log the user access
+    logger.info(f"User {user.username} ({user.role}) accessed the role-based dashboard.")
+    
     return Response({"message": message}, status=status.HTTP_200_OK)
+
 
 class LogoutView(APIView):
     """

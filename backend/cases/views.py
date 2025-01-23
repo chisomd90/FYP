@@ -19,9 +19,9 @@ class CaseViewSet(ModelViewSet):
         """Override retrieve method for any custom behavior (optional)."""
         return super().retrieve(request, *args, **kwargs)
 
-    def perform_create(self, request, serializer):
+    def perform_create(self, serializer):
         """Set the created_by field to the logged-in user when creating a case."""
-        serializer.save(created_by=request.user)
+        serializer.save(created_by=self.request.user)
 
     def perform_update(self, serializer):
         """Custom update logic if required (currently defaults to DRF behavior)."""
