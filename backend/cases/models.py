@@ -28,6 +28,7 @@ class Case(models.Model):
         ('appealed', 'Appealed'),
     ])
     
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_cases')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,14 +1,16 @@
 from django.db import models
-from accounts.models import CustomUser
+from django.contrib.auth import get_user_model
 from cases.models import Case
+from datetime import datetime
+
+User = get_user_model()
 
 class Proceeding(models.Model):
-    case = models.ForeignKey(Case, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255, default="Untitled")
     description = models.TextField()
-    date = models.DateField()
-    outcome = models.TextField(blank=True, null=True)
-    judge = models.ForeignKey(CustomUser, limit_choices_to={'role': 'judge'}, on_delete=models.CASCADE)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name="proceedings")
+    recorded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="recorded_proceedings")
+    date_recorded = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
-        return f"Proceeding for Case {self.case.case_number} on {self.date}"
-
+        return self.title
