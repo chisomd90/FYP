@@ -2,33 +2,30 @@ from django.db import models
 from accounts.models import CustomUser
 
 class Case(models.Model):
-    case_number = models.CharField(max_length=100, unique=True)
+    case_number = models.CharField(max_length=255, unique=True)
     title = models.CharField(max_length=255)
     plaintiff = models.CharField(max_length=255)
     defendant = models.CharField(max_length=255)
-    
-    # Adding related_name to avoid reverse accessor conflicts
     judge = models.ForeignKey(
-        CustomUser, 
-        limit_choices_to={'role': 'judge'}, 
-        on_delete=models.CASCADE, 
-        related_name='cases_as_judge'
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="judged_cases"
     )
-    
-    # Adding related_name to ManyToManyField to avoid reverse accessor conflicts
-    lawyer = models.ManyToManyField(
-        CustomUser, 
-        limit_choices_to={'role': 'lawyer'}, 
-        related_name='cases_as_lawyer'
+    lawyer = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="lawyer_cases",
+        null=True,  # Allows null values for the field
+        blank=True  # Makes the field optional in forms
     )
-    
-    status = models.CharField(max_length=50, choices=[
-        ('ongoing', 'Ongoing'),
-        ('closed', 'Closed'),
-        ('appealed', 'Appealed'),
-    ])
-    
-    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_cases')
+    status = models.CharField(max_length=50, choices=[('ongoing', 'Ongoing'), ('closed', 'Closed')])
+    created_by = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="created_cases",
+        null=False,  # Ensure field is non-nullable
+        default=1    # Replace with the default user's ID
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

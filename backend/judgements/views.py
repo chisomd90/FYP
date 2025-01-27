@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import Judgement
+from .models import Judgement, Case
 from .serializers import JudgementSerializer
 from .permissions import IsJudgeOrReadOnly
 
@@ -12,7 +12,17 @@ class JudgementListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(judge=self.request.user)
+        case_id = self.request.data.get('case')
+        if case_id:
+            # Retrieve the case
+            case = Case.objects.get(id=case_id)
+
+            # Ensure the judge matches the case's judge
+            serializer.save(judge=case.judge, case=case)
+        else:
+            # Fallback: Default to the current authenticated user
+            serializer.save(judge=self.request.user)
+
 
 # Retrieve/Update/Delete Judgments
 class JudgementDetailView(generics.RetrieveUpdateDestroyAPIView):

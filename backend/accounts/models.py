@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = "ADMIN", 'Admin'
         JUDGE = "JUDGE", 'Judge'
-        CLERK = "CLERK", 'Student'
+        CLERK = "CLERK", 'Clerk'
         LAWYER = "LAWYER", 'Lawyer'
 
     role = models.CharField(max_length=20, choices=Role.choices)
